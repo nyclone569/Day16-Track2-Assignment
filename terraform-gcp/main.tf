@@ -83,17 +83,17 @@ resource "google_project_iam_member" "gpu_node_metric_writer" {
   member  = "serviceAccount:${google_service_account.gpu_node_sa.email}"
 }
 
-# 8. GPU Node (Compute Engine VM in Private Subnet)
+# 8. CPU Node (Compute Engine VM in Private Subnet) - CPU Mode for LightGBM
 resource "google_compute_instance" "gpu_node" {
-  name         = "ai-gpu-node"
+  name         = "ai-cpu-node"
   machine_type = var.machine_type
   zone         = var.zone
   tags         = ["gpu-node"]
 
   boot_disk {
     initialize_params {
-      # Deep Learning VM image with CUDA pre-installed
-      image = "projects/deeplearning-platform-release/global/images/family/common-cu121-debian-11"
+      # Ubuntu 22.04 LTS image (không cần Deep Learning image cho CPU)
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
       size  = 100
       type  = "pd-ssd"
     }
@@ -105,13 +105,10 @@ resource "google_compute_instance" "gpu_node" {
     # No access_config block = no public IP (private only)
   }
 
-  guest_accelerator {
-    type  = var.gpu_type
-    count = var.gpu_count
-  }
+  # Không có GPU accelerator trong CPU mode
 
   scheduling {
-    on_host_maintenance = "TERMINATE"
+    on_host_maintenance = "MIGRATE"  # CPU có thể MIGRATE, không cần TERMINATE
     automatic_restart   = true
   }
 
@@ -120,9 +117,8 @@ resource "google_compute_instance" "gpu_node" {
     scopes = ["cloud-platform"]
   }
 
-  metadata_startup_script = templatefile("${path.module}/user_data.sh", {
-    hf_token = var.hf_token
-    model_id = var.model_id
+  metadata_startup_script = templatefile("${path.module}/user_data_cpu.sh", {
+    # Không cần HF token cho LightGBM
   })
 
   metadata = {

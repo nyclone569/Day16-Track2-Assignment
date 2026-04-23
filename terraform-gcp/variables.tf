@@ -6,13 +6,13 @@ variable "project_id" {
 variable "region" {
   description = "GCP Region"
   type        = string
-  default     = "us-central1"
+  default     = "us-west1"
 }
 
 variable "zone" {
   description = "GCP Zone"
   type        = string
-  default     = "us-central1-a"
+  default     = "us-west1-b"
 }
 
 variable "hf_token" {
@@ -29,19 +29,20 @@ variable "model_id" {
 }
 
 variable "machine_type" {
-  description = "GCE Machine Type for the GPU node"
+  description = "GCE Machine Type for the CPU node"
   type        = string
-  default     = "n1-standard-4"
+  default     = "n2-highmem-8"  # 8 vCPU, 64 GB RAM - tương đương r5.2xlarge của AWS
 }
 
+# GPU variables - không dùng nữa nhưng giữ lại để tránh lỗi
 variable "gpu_type" {
-  description = "GPU accelerator type"
+  description = "GPU accelerator type (not used in CPU mode)"
   type        = string
-  default     = "nvidia-tesla-t4"
+  default     = ""
 }
 
 variable "gpu_count" {
-  description = "Number of GPUs to attach"
+  description = "Number of GPUs to attach (not used in CPU mode)"
   type        = number
-  default     = 1
+  default     = 0
 }
