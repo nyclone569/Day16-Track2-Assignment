@@ -5,6 +5,7 @@
 **Platform:** Google Cloud Platform (GCP)  
 **Instance Type:** n2-highmem-8 (8 vCPU, 64 GB RAM)  
 **Region/Zone:** us-west1-b  
+**Mã nguồn:** terraform-gcp
 
 ---
 
